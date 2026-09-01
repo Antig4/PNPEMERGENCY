@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom scrollbars for command center screens */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Leaflet Map overrides for sleek dark command center theme */
+.leaflet-container {
+  background-color: #0F172A !important;
+  font-family: 'Inter', sans-serif !important;
+  z-index: 1 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  border: 1px solid #334155 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-tip {
+  background: #1E293B !important;
+  border: 1px solid #334155 !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #64748B !important;
+}

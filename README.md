@@ -1,56 +1,123 @@
-# Welcome to your Expo app 👋
+# PNP EmergencyLink — Public Safety & Emergency Response Platform 🚓🚨
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**PNP EmergencyLink** is an integrated emergency response and geospatial tracking platform designed for the Philippine National Police (PNP). The platform connects Citizens, Mobile Patrol Units, and Command Center Administrators in real-time.
 
-## Get started
+---
 
-1. Install dependencies
+## 🏗️ System Architecture
 
+The system consists of three core components:
+
+1. **Laravel REST API Backend (`/backend`)**: Manages database persistence, authentication (Sanctum), incident lifecycle management, and spatial calculations.
+2. **Admin Command Center Web App (`/admin-web`)**: Built with React, Vite, TailwindCSS, and Leaflet. Provides live dispatch monitoring, responder routing, and GIS density heatmaps.
+3. **Citizen & Responder Mobile Application (`/`)**: Built with Expo (React Native). Enables one-touch emergency reporting, real-time officer GPS tracking, evidence uploads, and patrol unit dispatch workflows.
+
+---
+
+## 📋 Prerequisites
+
+Before running the project, ensure you have the following installed on your machine:
+
+- **PHP**: `>= 8.2`
+- **Composer**: `>= 2.0`
+- **Node.js**: `>= 18.x` & `npm`
+- **Git**
+
+---
+
+## 🚀 How to Run the System (Step-by-Step Guide)
+
+To run the full system locally so that both **Web Admin** and **Mobile App/APK** work together seamlessly, follow these steps in order.
+
+### Step 1: Start the Backend REST API Server
+
+1. Open a terminal and navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
+3. Initialize the database and run seeders (Populates stations, patrol officers, and admin accounts):
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+4. **IMPORTANT**: Start the server bound to `0.0.0.0` so physical phones on Wi-Fi can connect:
+   ```bash
+   php artisan serve --host=0.0.0.0 --port=8000
+   ```
+   > 💡 *The backend is now accessible locally at `http://localhost:8000/api` and over LAN at `http://<YOUR_COMPUTER_IP>:8000/api`.*
+
+---
+
+### Step 2: Start the Admin Web Dashboard
+
+1. Open a new terminal window and navigate to the admin web directory:
+   ```bash
+   cd admin-web
+   ```
+2. Install Node dependencies:
    ```bash
    npm install
    ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+4. Access the Admin Command Center in your browser:
+   ```text
+   http://localhost:3000
+   ```
 
-2. Start the app
+---
 
+### Step 3: Run the Mobile Application (App & APK)
+
+#### Option A: Running in Development (Expo Server)
+1. Open a new terminal window in the root directory:
    ```bash
    npx expo start
    ```
+2. Press `w` to open in a web browser, or scan the QR code with **Expo Go** on your physical Android phone (ensure your phone is connected to the same Wi-Fi network).
 
-In the output, you'll find options to open the app in a
+#### Option B: Building & Running Physical Android APK
+1. Ensure your current computer IP address (e.g. `192.168.1.148`) is updated in `app.json` under `extra.EXPO_PUBLIC_API_URL`:
+   ```json
+   "extra": {
+     "EXPO_PUBLIC_API_URL": "http://192.168.1.148:8000/api"
+   }
+   ```
+2. Ensure `"usesCleartextTraffic": true` is enabled in `app.json` under `"android"`.
+3. Build the APK locally or via EAS:
+   ```bash
+   eas build -p android --profile preview
+   ```
+4. Install the generated `.apk` file directly onto your Android device.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🔑 Default Login Credentials
 
-## Get a fresh project
+| User Role | Email / Badge Number | Password | Target Interface |
+| :--- | :--- | :--- | :--- |
+| **Admin Command Center** | `admin@emergencylink.ph` | `adminpass123` | Admin Web (`http://localhost:3000`) |
+| **Patrol Officer 01** | `BCPO-99421` *(or `patrol01@emergencylink.ph`)* | `patrolpass123` | Mobile App / APK |
+| **Patrol Officer 02** | `BCPO-99422` *(or `patrol02@emergencylink.ph`)* | `patrolpass123` | Mobile App / APK |
+| **Citizen Account** | `citizen@emergencylink.ph` | `citizenpass123` | Mobile App / APK |
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## 🌐 24/7 Cloud Deployment Note
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+*When running locally, your computer must be turned **ON** and connected to the same Wi-Fi as your phone for the APK to send reports.*
 
-### Other setup steps
+To run the system **24/7 without keeping your PC on**:
+1. Deploy `/backend` and SQLite/MySQL to a cloud host (Render, Railway, or VPS).
+2. Deploy `/admin-web` to Vercel or Netlify.
+3. Update `app.json` with your live HTTPS API URL (e.g. `https://api.pnpemergencylink.ph/api`) and build the final APK.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+---
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🛡️ License & Credits
+Developed for the Philippine National Police (BCPO Headquarters) Emergency Dispatch & GIS Tracking System.

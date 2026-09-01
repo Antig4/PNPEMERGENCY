@@ -1,98 +1,84 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Shield } from 'lucide-react-native';
+import { useAuth } from '../context/AuthContext';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+/**
+ * App entry point — role-based session check.
+ *
+ * Flow:
+ *   1. While AuthContext is loading the saved session → show splash screen
+ *   2. If logged in as CITIZEN  → /home
+ *   3. If logged in as PATROL_OFFICER → /patrol/dashboard
+ *   4. Otherwise (ADMIN / not logged in / expired) → /login
+ */
+export default function IndexScreen() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (isAuthenticated && user) {
+      if (user.role === 'PATROL_OFFICER') {
+        router.replace('/patrol/dashboard');
+      } else if (user.role === 'CITIZEN') {
+        router.replace('/home');
+      } else {
+        // ADMIN or unknown role → not allowed on mobile, send to login
+        router.replace('/login');
+      }
+    } else {
+      router.replace('/login');
+    }
+  }, [isLoading, isAuthenticated, user]);
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+    <View style={styles.container}>
+      <View style={styles.brandBox}>
+        <View style={styles.shieldBox}>
+          <Shield color="#3B82F6" size={48} />
+        </View>
+        <Text style={styles.appName}>PNP EmergencyLink</Text>
+        <Text style={styles.tagline}>Swift Response. Safe Butuan.</Text>
+      </View>
+      <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 24 }} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
+    backgroundColor: '#0F172A',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    padding: 20,
   },
-  title: {
-    textAlign: 'center',
+  brandBox: {
+    alignItems: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  shieldBox: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#1E293B',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#3B82F6',
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  appName: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  tagline: {
+    color: '#94A3B8',
+    fontSize: 13,
+    marginTop: 4,
   },
 });

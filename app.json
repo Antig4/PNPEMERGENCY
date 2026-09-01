@@ -1,22 +1,32 @@
 {
   "expo": {
-    "name": "APPLICATION",
-    "slug": "APPLICATION",
+    "name": "PNP EmergencyLink",
+    "slug": "kirk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "application",
-    "userInterfaceStyle": "automatic",
+    "scheme": "pnpemergencylink",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "PNP EmergencyLink needs your location to identify the nearest available emergency responder and send your emergency location.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "PNP EmergencyLink needs your location to identify the nearest available emergency responder and send your emergency location."
+      }
     },
     "android": {
+      "package": "com.pnp.emergencylink",
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0F172A",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -28,15 +38,28 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0F172A",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "PNP EmergencyLink needs your location to identify the nearest available emergency responder and send your emergency location."
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "EXPO_PUBLIC_API_URL": "http://192.168.1.148:8000/api",
+      "eas": {
+        "projectId": "cd584c99-7894-423c-a0a9-5ec6462b1516"
+      }
     }
   }
 }
